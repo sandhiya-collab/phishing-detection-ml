@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - PhishGuard AI</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary) 0%, #0f172a 100%);
+            min-height: 100vh;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .profile-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--accent);
+            transform: translateX(-5px);
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-avatar i {
+            font-size: 3rem;
+            color: var(--accent);
+        }
+
+        .profile-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            height: fit-content;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-color: var(--accent);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .card-title i {
+            font-size: 1.25rem;
+            color: var(--accent);
+        }
+
+        .card-title h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .api-keys-section {
+            margin-top: 2rem;
+        }
+
+        .api-key-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .api-key-item:hover {
+            border-color: var(--accent);
+        }
+
+        .api-key-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .api-key-name {
+            font-weight: 600;
+            color: var(--accent);
+            font-size: 1rem;
+        }
+
+        .api-key-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .api-key-status.active {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .api-key-status.inactive {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .api-key-value {
+            font-family: 'Source Code Pro', monospace;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            word-break: break-all;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .copy-btn {
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .copy-btn:hover {
+            color: var(--accent);
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .api-key-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .api-key-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-weight: 500;
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: rgba(16, 185, 129, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .create-key-form {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .create-key-form input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.75rem 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .create-key-form input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .create-key-form input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .scans-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 1rem;
+        }
+
+        .scan-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .scan-item:hover {
+            background: rgba(37, 99, 235, 0.1);
+            border-color: var(--accent);
+            transform: translateX(5px);
+        }
+
+        .scan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .scan-type {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .scan-verdict {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .scan-verdict.phishing {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .scan-verdict.suspicious {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        .scan-verdict.safe {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .scan-content {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            word-break: break-all;
+        }
+
+        .scan-time {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .view-all-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(37, 99, 235, 0.1);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .view-all-link:hover {
+            background: rgba(37, 99, 235, 0.2);
+            transform: translateX(5px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            animation: slideInRight 0.3s ease;
+            backdrop-filter: blur(20px);
+            min-width: 300px;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .toast.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .toast.info {
+            border-left: 4px solid var(--info);
+        }
+
+        .toast-icon {
+            font-size: 1.25rem;
+        }
+
+        .toast.success .toast-icon {
+            color: var(--success);
+        }
+
+        .toast.error .toast-icon {
+            color: var(--danger);
+        }
+
+        .toast.warning .toast-icon {
+            color: var(--warning);
+        }
+
+        .toast.info .toast-icon {
+            color: var(--info);
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .toast-message {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .toast-close:hover {
+            color: var(--text-primary);
+        }
+
+        .session-expired-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .session-expired-message a {
+            color: white;
+            background: var(--danger);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-left: auto;
+        }
+
+        .session-expired-message a:hover {
+            background: #dc2626;
+        }
+
+        @media (max-width: 768px) {
+            .profile-container {
+                padding: 1rem;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .create-key-form {
+                flex-direction: column;
+            }
+
+            .create-key-form button {
+                width: 100%;
+            }
+
+            .api-key-value {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: flex-start;
+            }
+
+            .toast {
+                min-width: auto;
+                width: calc(100vw - 40px);
+                margin: 0 20px 1rem 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <!-- Session Expired Message -->
+        <div id="sessionExpiredMessage" class="session-expired-message">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Your session has expired. Please login again.</span>
+            <a href="/login?next=/profile">Login</a>
+        </div>
+
+        <a href="/" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+
+        <!-- Profile Header -->
+        <div class="profile-header">
+           <div class="profile-avatar">
+    <img src="{{ url_for('static', filename='icon.png') }}" alt="Profile Icon" style="width: 60px; height: 60px; border-radius: 50%;">
+</div>
+            <h1>{{ user.username }}</h1>
+            <p>{{ user.email }}</p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Member since {{ user.created_at.strftime('%B %d, %Y') }}</p>
+        </div>
+
+        <!-- Profile Grid -->
+        <div class="profile-grid">
+            <!-- Account Info Card -->
+            <div class="profile-card">
+                <div class="card-title">
+                    <i class="fas fa-id-card"></i>
+                    <h2>Account Information</h2>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Username</span>
+                    <span class="info-value">{{ user.username }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email</span>
+                    <span class="info-value">{{ user.email }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">User ID</span>
+                    <span class="info-value">{{ user.id }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Last Login</span>
+                    <span class="info-value">{{ user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login else 'Never' }}</span>
+                </div>
+            </div>
+
+            <!-- Statistics Card -->
+            <div class="profile-card">
+                <div class="card-title">
+                    <i class="fas fa-chart-bar"></i>
+                    <h2>Your Statistics</h2>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Total Scans</span>
+                    <span class="info-value">{{ stats.total_scans }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Safe</span>
+                    <span class="info-value" style="color: var(--success);">{{ stats.safe }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Suspicious</span>
+                    <span class="info-value" style="color: var(--warning);">{{ stats.suspicious }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Phishing</span>
+                    <span class="info-value" style="color: var(--danger);">{{ stats.phishing }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Keys Section -->
+        <div class="profile-card" style="margin-top: 1.5rem;">
+            <div class="card-title">
+                <i class="fas fa-key"></i>
+                <h2>API Keys</h2>
+                <a href="/api-keys" class="btn-small btn-secondary" style="margin-left: auto;">
+                    <i class="fas fa-external-link-alt"></i> Manage All
+                </a>
+            </div>
+            
+            <div id="apiKeysList" class="api-keys-section">
+                {% if api_keys %}
+                    {% for key in api_keys[:3] %}  <!-- Show only first 3 keys -->
+                    <div class="api-key-item" id="key-{{ key.id }}">
+                        <div class="api-key-header">
+                            <span class="api-key-name">{{ key.key_name }}</span>
+                            <span class="api-key-status {% if key.is_active %}active{% else %}inactive{% endif %}">
+                                {% if key.is_active %}Active{% else %}Revoked{% endif %}
+                            </span>
+                        </div>
+                        <div class="api-key-value">
+                            <span>{{ key.api_key[:20] }}...{{ key.api_key[-10:] }}</span>
+                            <i class="fas fa-copy copy-btn" onclick="copyToClipboard('{{ key.api_key }}')" title="Copy to clipboard"></i>
+                        </div>
+                        <div class="api-key-footer">
+                            <span><i class="fas fa-calendar"></i> Created: {{ key.created_at.strftime('%Y-%m-%d') }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-key"></i>
+                        <p>No API keys yet. Create your first API key below.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Create New API Key</h3>
+                <div class="create-key-form">
+                    <input type="text" id="newKeyName" placeholder="Enter key name (e.g., Development, Production)" maxlength="50">
+                    <button class="btn-small btn-primary" onclick="createApiKey()" id="createKeyBtn">
+                        <i class="fas fa-plus"></i> Generate Key
+                    </button>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem;">
+                    <i class="fas fa-info-circle"></i> Maximum 50 characters. No special characters allowed.
+                </p>
+            </div>
+        </div>
+
+        <!-- Recent Scans Section -->
+        <div class="profile-card" style="margin-top: 1.5rem;">
+            <div class="card-title">
+                <i class="fas fa-history"></i>
+                <h2>Recent Scans</h2>
+            </div>
+            
+            {% if scans %}
+                <div class="scans-list">
+                    {% for scan in scans %}
+                    <div class="scan-item" onclick="viewScanDetails({{ scan.id }})">
+                        <div class="scan-header">
+                            <span class="scan-type">{{ scan.scan_type|upper }}</span>
+                            <span class="scan-verdict {{ scan.verdict.lower() }}">{{ scan.verdict }}</span>
+                        </div>
+                        <div class="scan-content">
+                            {{ scan.content[:100] }}{% if scan.content|length > 100 %}...{% endif %}
+                        </div>
+                        <div class="scan-time">
+                            <i class="fas fa-clock"></i> {{ scan.created_at.strftime('%Y-%m-%d %H:%M') }} | 
+                            <i class="fas fa-chart-line"></i> {{ scan.confidence }}% confidence
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <a href="/history" class="view-all-link">
+                        <i class="fas fa-history"></i> View Full History
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>No scans yet. Start your first analysis!</p>
+                    <a href="/" class="btn-small btn-primary" style="margin-top: 1rem; display: inline-block;">
+                        <i class="fas fa-search"></i> Start Analysis
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script>
+        // Check session on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSession();
+            
+            // Add input validation
+            const keyInput = document.getElementById('newKeyName');
+            if (keyInput) {
+                keyInput.addEventListener('input', validateKeyInput);
+                keyInput.addEventListener('keydown', preventSpecialChars);
+            }
+        });
+
+        // Check if user session is valid
+        async function checkSession() {
+            try {
+                const response = await fetch('/api/history?per_page=1', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.status === 401) {
+                    showSessionExpired();
+                }
+            } catch (error) {
+                console.error('Session check failed:', error);
+            }
+        }
+
+        function showSessionExpired() {
+            const messageDiv = document.getElementById('sessionExpiredMessage');
+            if (messageDiv) {
+                messageDiv.style.display = 'flex';
+            }
+            
+            // Disable all interactive elements
+            const createBtn = document.getElementById('createKeyBtn');
+            if (createBtn) createBtn.disabled = true;
+            
+            const keyInput = document.getElementById('newKeyName');
+            if (keyInput) keyInput.disabled = true;
+            
+            // Disable all copy buttons
+            document.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.style.pointerEvents = 'none';
+                btn.style.opacity = '0.5';
+            });
+        }
+
+        function validateKeyInput(e) {
+            const input = e.target;
+            const btn = document.getElementById('createKeyBtn');
+            const value = input.value.trim();
+            
+            if (value.length > 0 && value.length <= 50) {
+                btn.disabled = false;
+            } else {
+                btn.disabled = true;
+            }
+        }
+
+        function preventSpecialChars(e) {
+            // Prevent < > & " ' characters
+            if (e.key === '<' || e.key === '>' || e.key === '&' || e.key === '"' || e.key === "'") {
+                e.preventDefault();
+                showToast('Special characters are not allowed in key names', 'warning');
+            }
+        }
+
+        // Copy to clipboard function
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('API key copied to clipboard!', 'success');
+            }).catch(err => {
+                showToast('Failed to copy to clipboard', 'error');
+            });
+        }
+
+        // Create API key function with improved error handling
+        async function createApiKey() {
+            const keyName = document.getElementById('newKeyName').value.trim();
+            if (!keyName) {
+                showToast('Please enter a key name', 'warning');
+                return;
+            }
+
+            if (keyName.length > 50) {
+                showToast('Key name must be 50 characters or less', 'warning');
+                return;
+            }
+
+            // Check for special characters
+            if (/[<>"']/.test(keyName)) {
+                showToast('Special characters < > " \' are not allowed', 'warning');
+                return;
+            }
+
+            const button = event.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            button.disabled = true;
+
+            try {
+                const response = await fetch('/api/keys', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ key_name: keyName })
+                });
+
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    // If it's HTML, check if it's a login redirect
+                    if (response.url.includes('/login') || response.status === 401) {
+                        showSessionExpired();
+                        showToast('Your session has expired. Please login again.', 'error');
+                        setTimeout(() => {
+                            window.location.href = '/login?next=/profile';
+                        }, 2000);
+                        return;
+                    }
+                    throw new Error('Server returned unexpected response');
+                }
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('API key created successfully!', 'success');
+                    // Reload the page to show the new key
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showToast(data.error || 'Failed to create API key', 'error');
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error creating API key:', error);
+                showToast('Error creating API key: ' + error.message, 'error');
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        }
+
+        // Revoke API key function
+        async function revokeKey(keyId) {
+            if (!confirm('Are you sure you want to revoke this API key? This action cannot be undone.')) {
+                return;
+            }
+
+            const button = event.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Revoking...';
+            button.disabled = true;
+
+            try {
+                const response = await fetch(`/api/keys/${keyId}/revoke`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    if (response.url.includes('/login') || response.status === 401) {
+                        showSessionExpired();
+                        showToast('Your session has expired. Please login again.', 'error');
+                        setTimeout(() => {
+                            window.location.href = '/login?next=/profile';
+                        }, 2000);
+                        return;
+                    }
+                    throw new Error('Server returned unexpected response');
+                }
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('API key revoked successfully!', 'success');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showToast(data.error || 'Failed to revoke API key', 'error');
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error revoking API key:', error);
+                showToast('Error revoking API key: ' + error.message, 'error');
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        }
+
+        // View scan details function
+        function viewScanDetails(scanId) {
+            window.location.href = `/api/history/${scanId}`;
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                success: 'check-circle',
+                error: 'exclamation-circle',
+                warning: 'exclamation-triangle',
+                info: 'info-circle'
+            };
+            
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas fa-${icons[type] || 'info-circle'}"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${type.charAt(0).toUpperCase() + type.slice(1)}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.style.animation = 'slideInRight 0.3s ease reverse';
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, duration);
+        }
+
+        // Handle Enter key in input
+        document.getElementById('newKeyName')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                createApiKey();
+            }
+        });
+
+        // Make functions globally available
+        window.createApiKey = createApiKey;
+        window.revokeKey = revokeKey;
+        window.viewScanDetails = viewScanDetails;
+        window.copyToClipboard = copyToClipboard;
+        window.showToast = showToast;
+    </script>
+</body>
+</html>

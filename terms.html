@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - PhishGuard AI</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .terms-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .terms-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .terms-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #ffffff, var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .terms-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .terms-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 3rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .terms-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .terms-section h2 {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--accent);
+            color: var(--text-primary);
+        }
+
+        .terms-section h2 i {
+            color: var(--accent);
+        }
+
+        .terms-section h3 {
+            margin: 1.5rem 0 1rem;
+            color: var(--accent-light);
+        }
+
+        .terms-section p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .terms-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .terms-section ul li {
+            color: var(--text-secondary);
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .terms-section ul li i {
+            color: var(--accent);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        .highlight-box {
+            background: rgba(37, 99, 235, 0.1);
+            border: 1px solid rgba(37, 99, 235, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box p {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .last-updated {
+            text-align: right;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-bottom: 2rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: var(--accent);
+        }
+
+        .accept-btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            margin-top: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .accept-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="terms-container">
+        <a href="javascript:history.back()" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+
+        <div class="terms-header">
+            <h1><i class="fas fa-file-contract"></i> Terms of Service</h1>
+            <p>Please read these terms carefully before using PhishGuard AI</p>
+        </div>
+
+        <div class="terms-card">
+            <div class="terms-section">
+                <h2><i class="fas fa-handshake"></i> 1. Acceptance of Terms</h2>
+                <p>By accessing or using PhishGuard AI ("the Service"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the Service.</p>
+                <div class="highlight-box">
+                    <p><i class="fas fa-info-circle"></i> By creating an account, you acknowledge that you have read, understood, and agree to be bound by these terms.</p>
+                </div>
+            </div>
+
+            <div class="terms-section">
+                <h2><i class="fas fa-desktop"></i> 2. Description of Service</h2>
+                <p>PhishGuard AI provides AI-powered phishing detection and threat analysis services. The Service analyzes URLs, emails, and messages to identify potential security threats using machine learning algorithms and threat intelligence data.</p>
+                
+                <h3>2.1 Service Features</h3>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> Real-time URL phishing detection</li>
+                    <li><i class="fas fa-check-circle"></i> Email header and content analysis</li>
+                    <li><i class="fas fa-check-circle"></i> Threat intelligence integration</li>
+                    <li><i class="fas fa-check-circle"></i> Scan history and reporting</li>
+                    <li><i class="fas fa-check-circle"></i> API access for developers</li>
+                </ul>
+
+                <h3>2.2 Service Limitations</h3>
+                <ul>
+                    <li><i class="fas fa-exclamation-circle"></i> The Service provides analysis based on available data and algorithms</li>
+                    <li><i class="fas fa-exclamation-circle"></i> Results are provided "as is" without guarantees of completeness or accuracy</li>
+                    <li><i class="fas fa-exclamation-circle"></i> The Service may not detect all phishing attempts</li>
+                </ul>
+            </div>
+
+            <div class="terms-section">
+                <h2><i class="fas fa-user"></i> 3. User Accounts</h2>
+                
+                <h3>3.1 Account Creation</h3>
+                <p>To use certain features of the Service, you must create an account. You agree to provide accurate and complete information and keep it updated.</p>
+
+                <h3>3.2 Account Security</h3>
+                <ul>
+                    <li><i class="fas fa-lock"></i> You are responsible for maintaining the confidentiality of your account credentials</li>
+                    <li><i class="fas fa-lock"></i> You are responsible for all activities that occur under your account</li>
+                    <li><i class="fas fa-lock"></i> Notify us immediately of any unauthorized use of your account</li>
+                </ul>
+
+                <h3>3.3 Account Termination</h3>
+                <p>We reserve the right to suspend or terminate accounts that violate these terms or for any other reason at our discretion.</p>
+            </div>
+
+            <div class="terms-section">
+                <h2><i class="fas fa-database"></i> 4. Data Usage and Privacy</h2>
+                
+                <h3>4.1 Data Collection</h3>
+                <p>We collect and store:</p>
+                <ul>
+                    <li><i class="fas fa-database"></i> Scan history and results</li>
+                    <li><i class="fas fa-database"></i> Account information</li>
+                    <li><i class="fas fa-database"></i> Usage analytics</li>
+                    <li><i class="fas fa-database"></i> Feedback and improvement data</li>
+                </ul>
+
+                <h3>4.2 Data Usage</h3>
+                <p>Your data is used to:</p>
+                <ul>
+                    <li><i class="fas fa-chart-line"></i> Improve our detection algorithms</li>
+                    <li><i class="fas fa-chart-line"></i> Provide personalized service</li>
+                    <li><i class="fas fa-chart-line"></i> Generate anonymous statistics</li>
+                    <li><i class="fas fa-chart-line"></i> Train machine learning models</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <p><i class="fas fa-shield-alt"></i> We do not sell your personal data to third parties. All data is used solely for improving our service and your user experience.</p>
+                </div>
+            </div>
+
+            <div class="terms-section">
+                <h2><i class="fas fa-code"></i> 5. API Usage</h2>
+                
+                <h3>5.1 API Keys</h3>
+                <ul>
+                    <li><i class="fas fa-key"></i> API keys are for individual use only and should not be shared</li>
+                    <li><i class="fas fa-key"></i> You are responsible for all API requests made with your key</li>
+                    <li><i class="fas fa-key"></i> Rate limits apply to ensure fair usage</li>
+                </ul>
+
+                <h3>5.2 Acceptable Use</h3>
+                <p>The API may not be used for:</p>
+                <ul>
+                    <li><i class="fas fa-ban"></i> Illegal or unauthorized purposes</li>
+                    <li><i class="fas fa-ban"></i> Attempting to bypass security measures</li>
+                    <li><i class="fas fa-ban"></i> Excessive automated requests</li>
+                    <li><i class="fas fa-ban"></i> Reselling or redistributing the service</li>
+                </ul>
+            </div>
+
+            <div class="terms-section">
+                <h2><i class="fas fa-exclamation-triangle"></i> 6. Disclaimer of Warranties</h2>
+                <p>THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.</p>
+                <p>WE DO NOT WARRANT THAT:</p>
+                <ul>
+                    <li><i class="fas fa-times"></i> The Service will be uninterrupted or error-free</li>
+                    <li><i class="fas fa-times"></i> The results will be accurate or reliable</li>
+                    <li><i class="fas fa-times"></i> The quality of the Service will meet your expectations</li>
+                    <li><i class="fas fa-times"></i> Any errors will be corrected</li>
+                </ul>
+            </div>
+
+            <div class="terms-section">
+                <h2><i class="fas fa-gavel"></i> 7. Limitation of Liability</h2>
+                <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL PHISHGUARD AI BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING WITHOUT LIMITATION, LOSS OF PROFITS, DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES, RESULTING FROM:</p>
+                <ul>
+                    <li><i class="fas fa-times"></i> Your use or inability to use the Service</li>
+                    <li><i class="fas fa-times"></i> Any conduct or content of any third party on the Service</li>
+                    <li><i class="fas fa-times"></i> Unauthorized access, use, or alteration of your transmissions or content</li>
+                </ul>
+            </div>
+
+            <div class="terms-section">
+                <h2><i class="fas fa-sync"></i> 8. Changes to Terms</h2>
+                <p>We reserve the right to modify these terms at any time. We will notify users of significant changes via email or through the Service. Continued use of the Service after changes constitutes acceptance of the new terms.</p>
+            </div>
+
+            <div class="terms-section">
+                <h2><i class="fas fa-envelope"></i> 9. Contact Information</h2>
+                <p>If you have any questions about these Terms, please contact us:</p>
+                <ul>
+                    <li><i class="fas fa-envelope"></i> Email: support@phishguard.ai</li>
+                    <li><i class="fas fa-globe"></i> Website: https://phishguard.ai/contact</li>
+                    <li><i class="fas fa-phone"></i> Phone: +1 (555) 123-4567</li>
+                </ul>
+            </div>
+
+            <div class="last-updated">
+                Last Updated: March 4, 2026
+            </div>
+
+            <div style="text-align: center;">
+                <a href="/register" class="accept-btn">
+                    <i class="fas fa-check-circle"></i> I Accept These Terms
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

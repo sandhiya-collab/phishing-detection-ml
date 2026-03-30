@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSeek Phishing Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .deepseek-panel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .api-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .status-available { background: #10b981; }
+        .status-unavailable { background: #ef4444; }
+        .status-disabled { background: #6b7280; }
+        
+        .analysis-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .risk-score {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .score-high { color: #ef4444; }
+        .score-medium { color: #f59e0b; }
+        .score-low { color: #10b981; }
+        
+        .indicators-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .indicator-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f3f4f6;
+            border-radius: 5px;
+            border-left: 4px solid;
+        }
+        
+        .indicator-high { border-left-color: #ef4444; }
+        .indicator-medium { border-left-color: #f59e0b; }
+        .indicator-low { border-left-color: #10b981; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="deepseek-panel">
+            <h1>🔍 DeepSeek AI Phishing Analysis</h1>
+            <p>Enhanced phishing detection powered by DeepSeek AI</p>
+            
+            <div class="api-status status-{{ 'available' if deepseek_enabled else 'disabled' }}">
+                {{ api_status.status|upper }}
+            </div>
+        </div>
+        
+        <div class="analysis-section">
+            <h2>Analysis Panel</h2>
+            
+            <div class="input-group">
+                <label for="analysis-text">Enter text or URL to analyze:</label>
+                <textarea id="analysis-text" rows="6" placeholder="Paste text, URL, or email content here..."></textarea>
+                
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="use-deepseek" checked>
+                        Use DeepSeek AI Analysis
+                    </label>
+                    <label>
+                        <input type="checkbox" id="is-email">
+                        Analyze as Email Content
+                    </label>
+                </div>
+                
+                <button onclick="analyzeWithDeepSeek()" class="btn-primary">
+                    Analyze with DeepSeek AI
+                </button>
+            </div>
+        </div>
+        
+        <div id="results-section" class="analysis-section" style="display: none;">
+            <h2>Analysis Results</h2>
+            
+            <div id="results-content">
+                <!-- Results will be displayed here -->
+            </div>
+        </div>
+        
+        <div class="analysis-section">
+            <h2>About DeepSeek Integration</h2>
+            <p>This system combines:</p>
+            <ul>
+                <li><strong>Traditional ML Models:</strong> Fast, local phishing detection</li>
+                <li><strong>Threat Intelligence:</strong> Google Safe Browsing, VirusTotal</li>
+                <li><strong>DeepSeek AI:</strong> Advanced contextual analysis and reasoning</li>
+            </ul>
+            
+            <p>DeepSeek AI provides:</p>
+            <ul>
+                <li>Contextual understanding of phishing tactics</li>
+                <li>Brand impersonation detection</li>
+                <li>Social engineering pattern recognition</li>
+                <li>Multi-language support</li>
+                <li>Real-time threat intelligence</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        async function analyzeWithDeepSeek() {
+            const text = document.getElementById('analysis-text').value;
+            const useDeepSeek = document.getElementById('use-deepseek').checked;
+            const isEmail = document.getElementById('is-email').checked;
+            
+            if (!text.trim()) {
+                alert('Please enter some text to analyze');
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('results-content').innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div class="spinner"></div>
+                    <p>Analyzing with DeepSeek AI...</p>
+                </div>
+            `;
+            document.getElementById('results-section').style.display = 'block';
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        input: text,
+                        email: isEmail,
+                        use_deepseek: useDeepSeek
+                    })
+                });
+                
+                const data = await response.json();
+                displayResults(data);
+                
+            } catch (error) {
+                document.getElementById('results-content').innerHTML = `
+                    <div class="error-message">
+                        <h3>❌ Analysis Failed</h3>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function displayResults(data) {
+            let resultsHtml = `
+                <div class="verdict-header">
+                    <h3>Verdict: <span class="verdict-${data.status}">${data.verdict}</span></h3>
+                    <p>Risk Level: ${data.risk_level}</p>
+                    <p>Confidence: ${data.confidence}%</p>
+                    <p>Overall Score: ${(data.score * 100).toFixed(1)}/100</p>
+                </div>
+                
+                <div class="risk-score score-${getScoreClass(data.score)}">
+                    ${(data.score * 100).toFixed(0)}
+                </div>
+                
+                <h4>Risk Factors:</h4>
+                <ul class="indicators-list">
+            `;
+            
+            data.risk_factors.forEach(factor => {
+                resultsHtml += `
+                    <li class="indicator-item indicator-${getRiskClass(factor)}">
+                        ${factor}
+                    </li>
+                `;
+            });
+            
+            resultsHtml += '</ul>';
+            
+            if (data.deepseek_analyses) {
+                resultsHtml += `
+                    <h4>🤖 DeepSeek AI Analysis:</h4>
+                    <div class="deepseek-details">
+                        <pre>${JSON.stringify(data.deepseek_analyses, null, 2)}</pre>
+                    </div>
+                `;
+            }
+            
+            if (data.threat_intelligence) {
+                resultsHtml += `
+                    <h4>Threat Intelligence:</h4>
+                    <div class="threat-intel">
+                `;
+                
+                for (const [source, info] of Object.entries(data.threat_intelligence)) {
+                    resultsHtml += `<p><strong>${source}:</strong> ${info}</p>`;
+                }
+                
+                resultsHtml += '</div>';
+            }
+            
+            resultsHtml += `
+                <div class="recommendation">
+                    <h4>Recommendation:</h4>
+                    <p>${data.recommendation}</p>
+                </div>
+            `;
+            
+            document.getElementById('results-content').innerHTML = resultsHtml;
+        }
+        
+        function getScoreClass(score) {
+            if (score >= 0.7) return 'high';
+            if (score >= 0.45) return 'medium';
+            return 'low';
+        }
+        
+        function getRiskClass(factor) {
+            if (factor.includes('high') || factor.includes('critical')) return 'high';
+            if (factor.includes('medium') || factor.includes('suspicious')) return 'medium';
+            return 'low';
+        }
+    </script>
+</body>
+</html>

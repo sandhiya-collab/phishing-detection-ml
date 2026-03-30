@@ -1,0 +1,255 @@
+{
+  "tld_stats": {
+    "in": {
+      "safe": 0,
+      "suspicious": 1,
+      "phishing": 2,
+      "total": 3
+    },
+    "com": {
+      "safe": 24,
+      "suspicious": 5,
+      "phishing": 7,
+      "total": 36
+    },
+    "club": {
+      "safe": 0,
+      "suspicious": 1,
+      "phishing": 3,
+      "total": 4
+    },
+    "info": {
+      "safe": 0,
+      "suspicious": 2,
+      "phishing": 0,
+      "total": 2
+    },
+    "ru": {
+      "safe": 4,
+      "suspicious": 1,
+      "phishing": 2,
+      "total": 7
+    },
+    "1": {
+      "safe": 0,
+      "suspicious": 1,
+      "phishing": 0,
+      "total": 1
+    }
+  },
+  "domain_patterns": {
+    "gov.in": {
+      "safe": 0,
+      "suspicious": 1,
+      "phishing": 0,
+      "total": 1
+    },
+    "amazon.in": {
+      "safe": 0,
+      "suspicious": 0,
+      "phishing": 2,
+      "total": 2
+    },
+    "google.com": {
+      "safe": 5,
+      "suspicious": 2,
+      "phishing": 0,
+      "total": 7
+    },
+    "youtube.com": {
+      "safe": 1,
+      "suspicious": 2,
+      "phishing": 1,
+      "total": 4
+    },
+    "deepseek.com": {
+      "safe": 9,
+      "suspicious": 0,
+      "phishing": 0,
+      "total": 9
+    },
+    "secure-login-paypal-update.com": {
+      "safe": 0,
+      "suspicious": 0,
+      "phishing": 1,
+      "total": 1
+    },
+    "bing.com": {
+      "safe": 1,
+      "suspicious": 0,
+      "phishing": 0,
+      "total": 1
+    },
+    "paypal-secure-login.com": {
+      "safe": 0,
+      "suspicious": 0,
+      "phishing": 1,
+      "total": 1
+    },
+    "instagram-followers.club": {
+      "safe": 0,
+      "suspicious": 0,
+      "phishing": 3,
+      "total": 3
+    },
+    "booking.com": {
+      "safe": 1,
+      "suspicious": 0,
+      "phishing": 0,
+      "total": 1
+    },
+    "ajio.com": {
+      "safe": 6,
+      "suspicious": 0,
+      "phishing": 0,
+      "total": 6
+    },
+    "flipkart.com": {
+      "safe": 1,
+      "suspicious": 0,
+      "phishing": 0,
+      "total": 1
+    },
+    "security-login.info": {
+      "safe": 0,
+      "suspicious": 2,
+      "phishing": 0,
+      "total": 2
+    },
+    "vulnweb.com": {
+      "safe": 0,
+      "suspicious": 1,
+      "phishing": 0,
+      "total": 1
+    },
+    "security-check-login.ru": {
+      "safe": 4,
+      "suspicious": 1,
+      "phishing": 0,
+      "total": 5
+    },
+    "login.ru": {
+      "safe": 0,
+      "suspicious": 0,
+      "phishing": 2,
+      "total": 2
+    },
+    "com-login-verify.club": {
+      "safe": 0,
+      "suspicious": 1,
+      "phishing": 0,
+      "total": 1
+    },
+    "paypal-verification.com": {
+      "safe": 0,
+      "suspicious": 0,
+      "phishing": 4,
+      "total": 4
+    },
+    "1.1": {
+      "safe": 0,
+      "suspicious": 1,
+      "phishing": 0,
+      "total": 1
+    }
+  },
+  "subdomain_stats": {
+    "2": {
+      "safe": 4,
+      "suspicious": 2,
+      "phishing": 0,
+      "total": 6
+    },
+    "1": {
+      "safe": 19,
+      "suspicious": 4,
+      "phishing": 2,
+      "total": 25
+    },
+    "0": {
+      "safe": 0,
+      "suspicious": 0,
+      "phishing": 8,
+      "total": 8
+    },
+    "3": {
+      "safe": 0,
+      "suspicious": 2,
+      "phishing": 0,
+      "total": 2
+    }
+  },
+  "length_stats": {
+    "safe": [
+      14,
+      17,
+      17,
+      12,
+      17,
+      15,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      15,
+      16,
+      14,
+      34,
+      34,
+      34,
+      34,
+      17,
+      17,
+      17,
+      17,
+      17,
+      17,
+      14,
+      14,
+      14
+    ],
+    "suspicious": [
+      24,
+      14,
+      14,
+      15,
+      45,
+      45,
+      19,
+      29,
+      30,
+      11,
+      15
+    ],
+    "phishing": [
+      27,
+      27,
+      15,
+      30,
+      23,
+      24,
+      24,
+      24,
+      22,
+      22,
+      23,
+      23,
+      23,
+      23
+    ]
+  },
+  "hyphen_stats": {
+    "safe": 4,
+    "suspicious": 4,
+    "phishing": 13,
+    "total_hyphen": 21
+  },
+  "number_stats": {
+    "safe": 0,
+    "suspicious": 1,
+    "phishing": 0,
+    "total_with_numbers": 1
+  }
+}

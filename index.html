@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSRF Token Meta Tag -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <!-- User Login Status Meta Tag -->
+    <meta name="user-logged-in" content="{% if user %}true{% else %}false{% endif %}">
+    <title>PhishGuard AI | Threat Detection</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <style>
+        .detect-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            margin-left: 1rem;
+        }
+        
+        .input-type-indicator {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .username {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .btn-primary {
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            padding: 0.5rem 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+     <div class="logo-wrapper" style="display: flex; align-items: center;">
+    <img src="{{ url_for('static', filename='icon.png') }}" alt="PhishGuard Icon" style="width: 40px; height: 40px; margin-right: 10px;">
+    <div class="logo-text">
+        <h2>PhishGuard</h2>
+        <p>AI Security Suite</p>
+    </div>
+</div>
+    </div>
+
+    <div class="sidebar-menu">
+        <div class="menu-section">
+            <h3>ANALYSIS</h3>
+            <button class="menu-item active" onclick="showSection('analyze')">
+                <div class="menu-icon"><i class="fas fa-search"></i></div>
+                <span>Threat Analysis</span>
+                <div class="menu-indicator"></div>
+            </button>
+            <button class="menu-item" onclick="showSection('history')">
+                <div class="menu-icon"><i class="fas fa-history"></i></div>
+                <span>Scan History</span>
+                <div class="menu-badge" id="historyCount">0</div>
+            </button>
+            <button class="menu-item" onclick="showSection('reports')">
+                <div class="menu-icon"><i class="fas fa-chart-network"></i></div>
+                <span>Analytics</span>
+            </button>
+        </div>
+        <div class="menu-section">
+            <h3>SYSTEM</h3>
+            <button class="menu-item" onclick="exportData()">
+                <div class="menu-icon"><i class="fas fa-file-export"></i></div>
+                <span>Export Data</span>
+            </button>
+            <button class="menu-item" onclick="clearHistory()">
+                <div class="menu-icon"><i class="fas fa-broom"></i></div>
+                <span>Clear History</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="sidebar-footer">
+        <div class="system-status">
+            <div class="status-indicator active"></div>
+            <div class="status-info">
+                <p>System Status</p>
+                <span class="status-text">Active & Secure</span>
+            </div>
+        </div>
+        <div class="version-info">
+            v1.0.0 • AI-Powered
+        </div>
+    </div>
+</aside>
+
+<!-- ================= MAIN ================= -->
+<div class="main-content">
+    <header class="top-bar">
+        <div class="top-bar-left">
+            <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="breadcrumb">
+                <span id="currentSection">Threat Analysis</span>
+            </div>
+        </div>
+        <div class="top-bar-right">
+            {% if user %}
+                <div class="user-profile" onclick="window.location.href='/profile'">
+                    <div class="avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <span class="username">{{ user.username }}</span>
+                        <span class="user-role">Member</span>
+                    </div>
+                </div>
+                <a href="/dashboard" class="action-btn" title="Dashboard">
+                    <i class="fas fa-chart-pie"></i>
+                </a>
+                <!-- Updated Logout Link with handler -->
+                <a href="#" onclick="handleLogout(event)" class="action-btn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            {% else %}
+                <a href="/login" class="btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="/register" class="btn-secondary">
+                    <i class="fas fa-user-plus"></i> Register
+                </a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="content-container">
+        <!-- ================= ANALYZE SECTION ================= -->
+        <section id="analyze" class="content-section active">
+            <div class="section-header">
+                <div class="header-content">
+                    <h1><i class="fas fa-radar"></i> Threat Analysis Console</h1>
+                    <p>AI + ML + Threat Intelligence Layered Detection</p>
+                </div>
+            </div>
+
+            <div class="analysis-container">
+                <!-- INPUT PANEL -->
+                <div class="input-panel card">
+                    <form id="analyzeForm" onsubmit="analyze(event)">
+                        <input type="hidden" id="inputType" value="url">
+                        
+                        <!-- AUTO-DETECT BADGE -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+                            <div class="input-type-indicator">
+                                <span style="color: var(--text-secondary); margin-right: 0.75rem;">Input Type:</span>
+                                <span id="detectBadge" class="detect-badge" style="background: rgba(255, 255, 255, 0.1); border-color: var(--border); color: var(--text-secondary);">
+                                    <i class="fas fa-circle-info"></i>
+                                    <span id="detectText">Auto-detect</span>
+                                </span>
+                            </div>
+                            <div style="color: var(--text-muted); font-size: 0.85rem;">
+                                <i class="fas fa-magic"></i> Auto-detects on input
+                            </div>
+                        </div>
+
+                        <div class="input-header">
+                            <label for="analysisInput">Enter Content for Analysis</label>
+                            <div class="input-actions">
+                                <button type="button" class="btn-ghost" onclick="pasteFromClipboard()">
+                                    <i class="fas fa-paste"></i> Paste
+                                </button>
+                                <button type="button" class="btn-ghost" onclick="clearInput()">
+                                    <i class="fas fa-eraser"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+
+                        <textarea
+                            id="analysisInput"
+                            class="analysis-textarea"
+                            placeholder="Paste URL, email content, or suspicious message... (Auto-detects type)"
+                            rows="6"
+                            required></textarea>
+
+                        <div class="input-footer">
+                            <span class="char-counter">
+                                <span id="charCount">0</span> characters
+                            </span>
+                            <button type="submit" class="btn-analyze">
+                                <i class="fas fa-play"></i> Start Deep Analysis
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= HISTORY SECTION ================= -->
+        <section id="history" class="content-section">
+            <div class="section-header">
+                <div class="header-content">
+                    <h1><i class="fas fa-history"></i> Scan History</h1>
+                    <p>View and manage your past analysis reports</p>
+                </div>
+            </div>
+
+            <div class="history-container">
+                <!-- Filters -->
+                <div class="filters-bar">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="historySearch" placeholder="Search by content or verdict..." onkeyup="filterHistory()">
+                        <div class="search-actions">
+                            <button class="btn-clear-search" onclick="clearSearch()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <select id="historyFilter" class="filter-select" onchange="filterHistory()">
+                            <option value="all">All Types</option>
+                            <option value="url">URL</option>
+                            <option value="email">Email</option>
+                            <option value="message">Message</option>
+                        </select>
+                        <select id="riskFilter" class="filter-select" onchange="filterHistory()">
+                            <option value="all">All Risks</option>
+                            <option value="safe">Safe</option>
+                            <option value="suspicious">Suspicious</option>
+                            <option value="phishing">Phishing</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- History Table -->
+                <div class="history-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Type</th>
+                                <th>Content</th>
+                                <th>Verdict</th>
+                                <th>Risk Level</th>
+                                <th>Confidence</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTable"></tbody>
+                    </table>
+                    
+                    <!-- Empty State -->
+                    <div id="emptyHistory" class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-inbox"></i>
+                        </div>
+                        <h3>No scan history yet</h3>
+                        <p>Start by analyzing your first URL, email, or message</p>
+                        <button class="btn-primary" onclick="showSection('analyze')">
+                            <i class="fas fa-play"></i> Start Analysis
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        Showing <span id="startItem">0</span> - <span id="endItem">0</span> of <span id="totalItems">0</span> scans
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="pagination-btn" id="prevBtn" onclick="prevPage()" disabled>
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div class="page-numbers" id="pageNumbers"></div>
+                        <button class="pagination-btn" id="nextBtn" onclick="nextPage()" disabled>
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ANALYTICS SECTION ================= -->
+        <section id="reports" class="content-section">
+            <div class="section-header">
+                <div class="header-content">
+                    <h1><i class="fas fa-chart-network"></i> Security Analytics</h1>
+                    <p>Threat intelligence and detection statistics</p>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-chip">
+                        <i class="fas fa-calendar"></i>
+                        <select onchange="updateTimeRange(this.value)" style="background: none; border: none; color: var(--text-primary);">
+                            <option value="7d">Last 7 days</option>
+                            <option value="30d">Last 30 days</option>
+                            <option value="90d">Last 90 days</option>
+                            <option value="all">All time</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="stats-overview">
+                <div class="stat-card primary">
+                    <div class="stat-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Total Scans</h3>
+                        <div class="stat-value" id="totalScans">0</div>
+                        <div class="stat-trend">
+                            <i class="fas fa-arrow-up"></i> Lifetime scans
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Safe</h3>
+                        <div class="stat-value" id="safeScans">0</div>
+                        <div class="stat-trend">
+                            <span id="safePercent">0</span>% of total
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Suspicious</h3>
+                        <div class="stat-value" id="suspiciousScans">0</div>
+                        <div class="stat-trend">
+                            <span id="suspiciousPercent">0</span>% of total
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card danger">
+                    <div class="stat-icon">
+                        <i class="fas fa-skull-crossbones"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Phishing</h3>
+                        <div class="stat-value" id="phishingScans">0</div>
+                        <div class="stat-trend">
+                            <span id="phishingPercent">0</span>% of total
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Timeline -->
+            <div class="activity-section">
+                <div class="section-title">
+                    <h3><i class="fas fa-clock"></i> Recent Activity</h3>
+                    <button class="btn-icon" onclick="exportData()">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+                <div class="activity-timeline" id="activityList"></div>
+            </div>
+
+            <!-- Charts -->
+            <div class="chart-section">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-pie"></i> Threat Distribution</h3>
+                    </div>
+                    <div class="chart-placeholder">
+                        <div class="chart-visual">
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <div class="legend-color safe"></div>
+                                    <span>Safe</span>
+                                    <span class="legend-value" id="chartSafePercent">0%</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color suspicious"></div>
+                                    <span>Suspicious</span>
+                                    <span class="legend-value" id="chartSuspiciousPercent">0%</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color phishing"></div>
+                                    <span>Phishing</span>
+                                    <span class="legend-value" id="chartPhishingPercent">0%</span>
+                                </div>
+                            </div>
+                            <div class="chart-bars">
+                                <div class="chart-bar safe" id="safeBar" style="height: 0%;"></div>
+                                <div class="chart-bar suspicious" id="suspiciousBar" style="height: 0%;"></div>
+                                <div class="chart-bar phishing" id="phishingBar" style="height: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-line"></i> Detection Trends</h3>
+                    </div>
+                    <div class="chart-placeholder">
+                        <div style="color: var(--text-secondary); text-align: center; padding: 2rem;">
+                            <i class="fas fa-chart-bar fa-3x" style="margin-bottom: 1rem; opacity: 0.5;"></i>
+                            <p>More analytics coming soon</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Toast Notifications -->
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- Overlay for mobile sidebar -->
+<div id="overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<!-- Scripts -->
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+<script>
+    // =============================================
+    // AUTO-DETECTION FUNCTION
+    // =============================================
+    function detectInputType(text) {
+        if (!text || text.trim() === '') {
+            return null;
+        }
+        
+        text = text.trim().toLowerCase();
+        
+        // Check if it's a URL
+        const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+        const hasProtocol = text.startsWith('http://') || text.startsWith('https://');
+        const hasDot = text.includes('.') && !text.includes(' ');
+        const noSpaces = !text.includes(' ');
+        
+        if ((hasProtocol || (hasDot && noSpaces)) && urlPattern.test(text)) {
+            return 'url';
+        }
+        
+        // Check if it's an email
+        const emailIndicators = [
+            'from:', 'to:', 'subject:', 'cc:', 'bcc:', 
+            'delivered-to:', 'received:', 'dkim-signature:',
+            'mime-version:', 'content-type:'
+        ];
+        
+        let indicatorCount = 0;
+        emailIndicators.forEach(indicator => {
+            if (text.includes(indicator)) {
+                indicatorCount++;
+            }
+        });
+        
+        if (indicatorCount >= 2 || (text.includes('@') && text.includes('.') && text.includes(' '))) {
+            return 'email';
+        }
+        
+        return 'message';
+    }
+    
+    // Update UI based on detection
+    function updateDetectionUI() {
+        const textarea = document.getElementById('analysisInput');
+        const detectBadge = document.getElementById('detectBadge');
+        const detectText = document.getElementById('detectText');
+        const inputType = document.getElementById('inputType');
+        
+        if (!textarea || !detectBadge || !detectText || !inputType) return;
+        
+        const text = textarea.value;
+        const detectedType = detectInputType(text);
+        
+        if (detectedType === null) {
+            inputType.value = 'url';
+            detectBadge.innerHTML = '<i class="fas fa-circle-info"></i><span id="detectText">Auto-detect</span>';
+            detectBadge.style.background = 'rgba(255, 255, 255, 0.1)';
+            detectBadge.style.borderColor = 'var(--border)';
+            detectBadge.style.color = 'var(--text-secondary)';
+            return;
+        }
+        
+        inputType.value = detectedType;
+        
+        const icons = {
+            'url': 'fa-link',
+            'email': 'fa-envelope',
+            'message': 'fa-comment'
+        };
+        
+        const labels = {
+            'url': 'URL Detected',
+            'email': 'Email Detected',
+            'message': 'Message Detected'
+        };
+        
+        const colors = {
+            'url': 'rgba(37, 99, 235, 0.15)',
+            'email': 'rgba(16, 185, 129, 0.15)',
+            'message': 'rgba(245, 158, 11, 0.15)'
+        };
+        
+        const borderColors = {
+            'url': 'rgba(37, 99, 235, 0.3)',
+            'email': 'rgba(16, 185, 129, 0.3)',
+            'message': 'rgba(245, 158, 11, 0.3)'
+        };
+        
+        const textColors = {
+            'url': 'var(--accent-light)',
+            'email': 'var(--success)',
+            'message': 'var(--warning)'
+        };
+        
+        detectBadge.innerHTML = `<i class="fas ${icons[detectedType]}"></i><span id="detectText">${labels[detectedType]}</span>`;
+        detectBadge.style.background = colors[detectedType];
+        detectBadge.style.borderColor = borderColors[detectedType];
+        detectBadge.style.color = textColors[detectedType];
+    }
+    
+    // Initialize event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        const textarea = document.getElementById('analysisInput');
+        const charCount = document.getElementById('charCount');
+        
+        if (textarea) {
+            updateDetectionUI();
+            
+            textarea.addEventListener('input', function() {
+                if (charCount) {
+                    charCount.textContent = this.value.length;
+                }
+                updateDetectionUI();
+            });
+            
+            textarea.addEventListener('paste', function() {
+                setTimeout(updateDetectionUI, 10);
+            });
+        }
+    });
+</script>
+</body>
+</html>
